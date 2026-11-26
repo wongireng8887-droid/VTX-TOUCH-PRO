@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -30,36 +31,14 @@ private enum class Tab(val label: String) {
 @Composable
 fun VtxApp() {
     var selected by remember { mutableStateOf(Tab.Home) }
+
     Scaffold(
         containerColor = Canvas,
         bottomBar = {
-            NavigationBar(
-                containerColor = Color.White.copy(alpha = 0.88f),
-                tonalElevation = 0.dp
-            ) {
-                Tab.entries.forEach { tab ->
-                    val icon = when (tab) {
-                        Tab.Home -> Icons.Default.Home
-                        Tab.Discover -> Icons.Default.Explore
-                        Tab.Create -> Icons.Default.AddCircle
-                        Tab.Widgets -> Icons.Default.Widgets
-                        Tab.Settings -> Icons.Default.Settings
-                    }
-                    NavigationBarItem(
-                        selected = selected == tab,
-                        onClick = { selected = tab },
-                        icon = { Icon(icon, contentDescription = tab.label) },
-                        label = { Text(tab.label, fontSize = 10.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = TextPrimary,
-                            selectedTextColor = TextPrimary,
-                            indicatorColor = AccentSoft,
-                            unselectedIconColor = TextSecondary,
-                            unselectedTextColor = TextSecondary
-                        )
-                    )
-                }
-            }
+            FloatingLiquidNavigationBar(
+                selected = selected,
+                onSelect = { selected = it }
+            )
         }
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
@@ -69,6 +48,155 @@ fun VtxApp() {
                 Tab.Create -> CreateScreen()
                 Tab.Widgets -> MyWidgetsScreen()
                 Tab.Settings -> SettingsScreen()
+            }
+        }
+    }
+}
+
+@Composable
+private fun FloatingLiquidNavigationBar(
+    selected: Tab,
+    onSelect: (Tab) -> Unit
+) {
+    val tabs = Tab.entries
+    val selectedIndex = tabs.indexOf(selected)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent)
+            .navigationBarsPadding()
+            .padding(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .shadow(18.dp, RoundedCornerShape(30.dp))
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.White.copy(alpha = 0.96f), Color(0xFFEFF3F7).copy(alpha = 0.94f))
+                    ),
+                    RoundedCornerShape(30.dp)
+                )
+                .border(1.dp, Color.White.copy(alpha = 0.95f), RoundedCornerShape(30.dp))
+                .padding(horizontal = 5.dp, vertical = 5.dp)
+        ) {
+            val slotWidth = maxWidth / tabs.size
+            val indicatorWidth = 58.dp
+            val targetOffset = slotWidth * selectedIndex + (slotWidth - indicatorWidth) / 2
+            val indicatorOffset by androidx.compose.animation.core.animateDpAsState(
+                targetValue = targetOffset,
+                animationSpec = androidx.compose.animation.core.spring(
+                    dampingRatio = 0.72f,
+                    stiffness = 360f
+                ),
+                label = "liquid-indicator-position"
+            )
+            val indicatorWidthAnimated by androidx.compose.animation.core.animateDpAsState(
+                targetValue = if (selected == Tab.Create) 62.dp else indicatorWidth,
+                animationSpec = androidx.compose.animation.core.spring(
+                    dampingRatio = 0.68f,
+                    stiffness = 420f
+                ),
+                label = "liquid-indicator-width"
+            )
+
+            // The soft capsule follows the active tab with a spring, rather than snapping.
+            Box(
+                modifier = Modifier
+                    .offset(x = indicatorOffset)
+                    .width(indicatorWidthAnimated)
+                    .height(44.dp)
+                    .align(Alignment.CenterStart)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.White, Color(0xFFE5EDF3))
+                        ),
+                        RoundedCornerShape(22.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFB9C8D3).copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(22.dp)
+                    )
+                    .shadow(5.dp, RoundedCornerShape(22.dp))
+            )
+
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                tabs.forEach { tab ->
+                    val isSelected = selected == tab
+                    val icon = when (tab) {
+                        Tab.Home -> Icons.Default.Home
+                        Tab.Discover -> Icons.Default.Explore
+                        Tab.Create -> Icons.Default.AddCircle
+                        Tab.Widgets -> Icons.Default.Widgets
+                        Tab.Settings -> Icons.Default.Settings
+                    }
+                    val iconScale by androidx.compose.animation.core.animateFloatAsState(
+                        targetValue = if (isSelected) 1.10f else 0.94f,
+                        animationSpec = androidx.compose.animation.core.spring(
+                            dampingRatio = 0.62f,
+                            stiffness = 420f
+                        ),
+                        label = "nav-icon-scale-${tab.name}"
+                    )
+                    val iconTint by androidx.compose.animation.animateColorAsState(
+                        targetValue = if (isSelected) Color(0xFF536675) else Color(0xFF98A5AF),
+                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 260),
+                        label = "nav-icon-color-${tab.name}"
+                    )
+                    val labelTint by androidx.compose.animation.animateColorAsState(
+                        targetValue = if (isSelected) Color(0xFF536675) else Color(0xFF9AA6B0),
+                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 260),
+                        label = "nav-label-color-${tab.name}"
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                            ) { onSelect(tab) },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier.height(27.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = tab.label,
+                                tint = iconTint,
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .graphicsLayer {
+                                        scaleX = iconScale
+                                        scaleY = iconScale
+                                    }
+                            )
+                        }
+                        Spacer(Modifier.height(3.dp))
+                        Text(
+                            text = when (tab) {
+                                Tab.Widgets -> "Widgets"
+                                else -> tab.label
+                            },
+                            color = labelTint,
+                            fontSize = 9.sp,
+                            lineHeight = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+                            maxLines = 1
+                        )
+                    }
+                }
             }
         }
     }
