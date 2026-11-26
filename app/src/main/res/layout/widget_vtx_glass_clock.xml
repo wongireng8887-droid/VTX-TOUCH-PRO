@@ -3,47 +3,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center_vertical"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
-    android:paddingTop="14dp"
-    android:paddingBottom="14dp"
-    android:background="@drawable/bg_vtx_glass_clock">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="VTX  /  GLASS CLOCK"
-        android:textColor="#718493"
-        android:textSize="9sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.16"
-        android:includeFontPadding="false" />
+    android:gravity="center"
+    android:paddingStart="2dp"
+    android:paddingEnd="2dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:background="@android:color/transparent">
 
     <TextClock
         android:id="@+id/vtx_clock_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:format12Hour="h:mm"
+        android:format12Hour="hh:mm"
         android:format24Hour="HH:mm"
-        android:fontFamily="sans-serif-light"
-        android:textColor="#263642"
-        android:textSize="46sp"
-        android:letterSpacing="-0.035"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="#F4F8FC"
+        android:textSize="88sp"
+        android:textStyle="normal"
+        android:letterSpacing="-0.045"
         android:includeFontPadding="false"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:shadowColor="#80516B80"
+        android:shadowDx="1.5"
+        android:shadowDy="3"
+        android:shadowRadius="3" />
 
     <TextClock
         android:id="@+id/vtx_clock_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:format12Hour="EEEE, d MMM"
-        android:format24Hour="EEEE, d MMM"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="#82919D"
-        android:textSize="11sp"
+        android:layout_marginTop="5dp"
+        android:format12Hour="EEEE, d MMMM"
+        android:format24Hour="EEEE, d MMMM"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#EAF2F8"
+        android:textSize="12sp"
+        android:letterSpacing="0.10"
         android:includeFontPadding="false"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:shadowColor="#80516B80"
+        android:shadowDx="1"
+        android:shadowDy="1.5"
+        android:shadowRadius="2" />
 </LinearLayout>
