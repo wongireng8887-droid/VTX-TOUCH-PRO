@@ -40,3 +40,25 @@ Those belong to subsequent development phases. The Phase 1 Create page is intent
 
 ## Design note
 Android AppWidgets have host-imposed sizing and rendering limits. A Liquid Glass appearance is approximated with translucent surfaces, subtle borders, gradients and shadows; true system-wide backdrop blur is not guaranteed on all launchers.
+
+
+## Phase 2 — VTX Glass Clock
+
+Phase 2 adds the first real Android home-screen widget:
+
+- VTX Liquid Glass digital clock with Silver/White glass styling.
+- Device-local 12-hour or 24-hour time format.
+- Localized day and date.
+- Resizable home-screen widget.
+- Uses Android `TextClock` for live time display rather than a continuously running service.
+- Refreshes widget views when system time, date, or time zone changes.
+
+### Add the clock to your home screen
+
+1. Install the Phase 2 APK.
+2. Long-press an empty area of the Android home screen.
+3. Open **Widgets**.
+4. Find **VTX Widget OS** or **VTX Glass Clock**.
+5. Drag the clock widget onto the home screen and resize it if supported by the launcher.
+
+Note: actual glass blur depends on the launcher and Android widget rendering. The widget uses translucent layered gradients, a bright glass edge, and soft cool-grey tones to create the Liquid Glass appearance without relying on unsupported live blur.
